@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Linear Search Simulator</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #0b0b0b;
+            margin: 0;
+            padding: 30px;
+            color: #ffffff;
+        }
+
+        .container {
+            max-width: 750px;
+            margin: auto;
+            background: #151515;
+            padding: 30px;
+            border-radius: 15px;
+            border: 1px solid #333333;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.6);
+        }
+
+        h1 {
+            text-align: center;
+            color: #ff8c00;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #aaaaaa;
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-top: 15px;
+            margin-bottom: 7px;
+            color: #ff9d1a;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            background: #222222;
+            color: #ffffff;
+            border: 1px solid #555555;
+            border-radius: 8px;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #ff8c00;
+            box-shadow: 0 0 5px rgba(255, 140, 0, 0.4);
+        }
+
+        input::placeholder {
+            color: #777777;
+        }
+
+        .buttons {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 11px 18px;
+            border: none;
+            border-radius: 8px;
+            background: #ff8c00;
+            color: #000000;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #ffa31a;
+        }
+
+        button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .reset {
+            background: #333333;
+            color: #ffffff;
+        }
+
+        .reset:hover {
+            background: #444444;
+        }
+
+        .array {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 30px 0;
+        }
+
+        .cell {
+            min-width: 65px;
+            padding: 17px 10px;
+            border: 2px solid #555555;
+            border-radius: 10px;
+            text-align: center;
+            background: #222222;
+            color: #ffffff;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .cell small {
+            display: block;
+            font-size: 11px;
+            font-weight: normal;
+            margin-top: 5px;
+            color: #999999;
+        }
+
+        /* Current element */
+        .current {
+            background: #3a2300;
+            border-color: #ff8c00;
+            color: #ff9d1a;
+        }
+
+        /* Already checked elements */
+        .checked {
+            background: #292929;
+            border-color: #666666;
+            color: #aaaaaa;
+        }
+
+        /* Found element */
+        .found {
+            background: #4a2800;
+            border-color: #ff8c00;
+            color: #ffb347;
+            box-shadow: 0 0 12px rgba(255, 140, 0, 0.4);
+        }
+
+        .status {
+            background: #211600;
+            border-left: 5px solid #ff8c00;
+            padding: 15px;
+            border-radius: 8px;
+            line-height: 1.5;
+            color: #eeeeee;
+        }
+
+        .status b {
+            color: #ff9d1a;
+        }
+
+        .complexity {
+            margin-top: 20px;
+            padding: 15px;
+            background: #1e1e1e;
+            border: 1px solid #333333;
+            border-radius: 8px;
+        }
+
+        .complexity h3 {
+            margin-top: 0;
+            color: #ff8c00;
+        }
+
+        .complexity p {
+            color: #cccccc;
+        }
+
+        .complexity b {
+            color: #ff9d1a;
+        }
+
+        @media (max-width: 500px) {
+
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                padding: 20px;
+            }
+
+            .cell {
+                min-width: 50px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Linear Search Simulator</h1>
+
+    <p class="subtitle">
+        Step-by-step visualization of the Linear Search algorithm
+    </p>
+
+    <!-- Array Input -->
+    <label for="arrayInput">
+        Enter Array
+    </label>
+
+    <input
+        type="text"
+        id="arrayInput"
+        value=""
+        placeholder="Example: 10, 25, 7, 42, 18"
+    >
+
+    <!-- Search Input -->
+    <label for="searchInput">
+        Enter Element to Search
+    </label>
+
+    <input
+        type="number"
+        id="searchInput"
+        value=""
+        placeholder="Example: 42"
+    >
+
+    <!-- Buttons -->
+    <div class="buttons">
+
+        <button onclick="startSearch()">
+            Start Search
+        </button>
+
+        <button onclick="nextStep()" id="nextButton" disabled>
+            Next Step
+        </button>
+
+        <button onclick="resetSearch()" class="reset">
+            Reset
+        </button>
+
+    </div>
+
+    <!-- Array Display -->
+    <div id="arrayDisplay" class="array"></div>
+
+    <!-- Status -->
+    <div id="status" class="status">
+        Enter an array and search value, then click
+        <b>Start Search</b>.
+    </div>
+
+    <!-- Complexity -->
+    <div class="complexity">
+
+        <h3>Algorithm Complexity</h3>
+
+        <p>
+            <b>Best Case:</b> O(1)
+        </p>
+
+        <p>
+            <b>Average Case:</b> O(n)
+        </p>
+
+        <p>
+            <b>Worst Case:</b> O(n)
+        </p>
+
+        <p>
+            <b>Space Complexity:</b> O(1)
+        </p>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    // Variables
+    let array = [];
+    let searchValue;
+    let currentIndex = 0;
+    let searchFinished = false;
+    let foundIndex = -1;
+
+
+    // Start the search
+    function startSearch() {
+
+        let input = document.getElementById("arrayInput").value.trim();
+
+        // Check if array input is empty
+        if (input === "") {
+
+            document.getElementById("status").innerHTML =
+                "<b>Please enter an array.</b>";
+
+            return;
+        }
+
+        // Convert input into numbers
+        array = input
+            .split(",")
+            .map(item => Number(item.trim()));
+
+        // Check for invalid values
+        if (array.some(isNaN)) {
+
+            document.getElementById("status").innerHTML =
+                "<b>Invalid input.</b> Please enter numbers separated by commas.";
+
+            return;
+        }
+
+        let searchInput =
+            document.getElementById("searchInput").value.trim();
+
+        // Check if search value is empty
+        if (searchInput === "") {
+
+            document.getElementById("status").innerHTML =
+                "<b>Please enter the element you want to search.</b>";
+
+            return;
+        }
+
+        searchValue = Number(searchInput);
+
+        // Reset variables
+        currentIndex = 0;
+        searchFinished = false;
+        foundIndex = -1;
+
+        // Display array
+        displayArray();
+
+        // Enable next button
+        document.getElementById("nextButton").disabled = false;
+
+        // Display message
+        document.getElementById("status").innerHTML =
+            "Search started. Click <b>Next Step</b> to check the first element.";
+    }
+
+
+    // Perform one step
+    function nextStep() {
+
+        // If search is already finished
+        if (searchFinished) {
+            return;
+        }
+
+        // Check if we reached the end
+        if (currentIndex >= array.length) {
+
+            searchFinished = true;
+
+            document.getElementById("status").innerHTML =
+                "<b>Element not found.</b> The entire array has been checked.";
+
+            document.getElementById("nextButton").disabled = true;
+
+            displayArray();
+
+            return;
+        }
+
+        // Display current element
+        displayArray();
+
+        // Compare current element with search value
+        if (array[currentIndex] === searchValue) {
+
+            foundIndex = currentIndex;
+
+            searchFinished = true;
+
+            displayArray();
+
+            document.getElementById("status").innerHTML =
+                "<b>Element Found!</b><br>" +
+                searchValue +
+                " was found at index " +
+                currentIndex +
+                " (position " +
+                (currentIndex + 1) +
+                ").";
+
+            document.getElementById("nextButton").disabled = true;
+        }
+
+        else {
+
+            document.getElementById("status").innerHTML =
+                "Comparing <b>" +
+                array[currentIndex] +
+                "</b> with <b>" +
+                searchValue +
+                "</b> → Not equal. Moving to the next element.";
+
+            currentIndex++;
+
+            displayArray();
+        }
+    }
+
+
+    // Display array
+    function displayArray() {
+
+        let display =
+            document.getElementById("arrayDisplay");
+
+        display.innerHTML = "";
+
+        array.forEach(function(value, index) {
+
+            let cell =
+                document.createElement("div");
+
+            cell.classList.add("cell");
+
+            // Found element
+            if (index === foundIndex) {
+
+                cell.classList.add("found");
+
+            }
+
+            // Current element
+            else if (
+                index === currentIndex &&
+                !searchFinished
+            ) {
+
+                cell.classList.add("current");
+
+            }
+
+            // Already checked
+            else if (index < currentIndex) {
+
+                cell.classList.add("checked");
+            }
+
+            cell.innerHTML =
+                value +
+                "<small>Index " +
+                index +
+                "</small>";
+
+            display.appendChild(cell);
+
+        });
+    }
+
+
+    // Reset everything
+    function resetSearch() {
+
+        array = [];
+
+        currentIndex = 0;
+
+        searchFinished = false;
+
+        foundIndex = -1;
+
+        document.getElementById("arrayInput").value = "";
+
+        document.getElementById("searchInput").value = "";
+
+        document.getElementById("arrayDisplay").innerHTML = "";
+
+        document.getElementById("status").innerHTML =
+            "Enter an array and search value, then click <b>Start Search</b>.";
+
+        document.getElementById("nextButton").disabled = true;
+    }
+
+</script>
+
+</body>
+</html>
